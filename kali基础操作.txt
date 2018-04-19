@@ -1,0 +1,139 @@
+
+
+安装 Kali Linux 2018.1 及之后的事：
+https://blog.csdn.net/metaphorxi/article/details/79639862
+
+博客园：
+https://www.cnblogs.com/zysps1/p/kali_linux_diy.html
+
+
+
+
+
+
+kali更新源操作：
+
+一、添加更新源：
+leafpad /etc/apt/sources.list
+
+二、添加源
+#阿里云
+deb http://mirrors.aliyun.com/kali kali-rolling main non-free contrib
+deb-src http://mirrors.aliyun.com/kali kali-rolling main non-free contrib
+
+三、拿到更新源
+apt-get update
+
+
+
+
+
+
+
+Google输入法安装之后没反应的解决办法：
+安装Google输入法，重启，然后在进系统输入密码的时候，登录旁边的小齿轮点一下，
+选择最下面的一个桌面，在启动，就可以了。具体的问题我也不清楚，
+我之前第一个就可以用，现在我第一个也不能用，折腾了好几天。
+Ctrl+空格切换中英文。
+
+关于google浏览器无法打开的问题解决方案：
+
+用文件资源管理器按照这个路径打开  /usr/share/applications/ 
+
+chrome 图标，鼠标右键打开属性，在命令哪行 /usr/bin/google-chrome-stable %U
+
+ 的后面再加上这个语句 - -no-sandbox - -user-data-dir &，
+
+注意不要少空格、不要少空格、不要少空格，重要的事情说三遍。
+
+但也不要多加空格，每次的空格只有一个。加好之后，关闭这个这个标签，谷歌浏览器就可以打开使用了。
+
+
+
+
+
+
+
+
+安装mac主题及图表：
+git clone https://github.com/vinceliuice/Sierra-gtk-theme.git
+apt-get update 
+apt-get install gtk2-engines-murrine gtk2-engines-pixbuf
+cd Sierra-gtk-theme/
+chmod +x Install
+./Install
+
+
+  158  mkdir temp
+  159  mv MacOSX-icon-theme temp
+  160  mv Sierra-light.tar.xz temp
+  161  cat ./install.sh | grep xz
+  162  cp ./*.xz temp
+  163  mv install.sh temp
+  164  cd temp
+  165  chmod +x install.sh
+  166  ./install.sh
+  167  cd tem
+  168  ls
+  169  cd MacOSX
+  170  lscd
+  171  cd ..
+  172  mv MacOSX /usr/share/icons
+  173  mv MacOSX-dark /usr/share/icons
+  174  tar -Jxvf MacOSX-cursors.tar.xz
+  175  ls
+  176  mv capitaine-cursors /usr/share/icons
+  177  history | grep mv 
+  178  cat install.sh | grep mv 
+  179  clear 
+  180  cd /usr/share/icons/default
+  181  ls
+  182  cat index.theme
+  183  clear 
+  184  exit
+
+
+
+
+
+
+
+安装网易云音乐：
+创建一个非root用户安装
+
+
+
+
+
+
+
+
+安装wps：
+https://blog.csdn.net/github_39217805/article/details/73465999
+
+
+1.安装依赖包：
+dpkg -i libpng12-0_1.2.49-1+deb7u2_amd64.deb
+2.安装wps
+	sudo dpkg -i wps-office_10.1.0.5672~a21_amd64.deb
+3.安装字体库
+	unzip wps_symbol_fonts.zip
+	将字体库移动到/usr/share/fonts目录
+	sudo mv *.ttf *.TTF /usr/share/fontsg.csdn.net/github_39217805/article/details/73465999
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
