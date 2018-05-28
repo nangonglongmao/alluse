@@ -6,30 +6,44 @@ git init
 
 3.将你的项目复制到你的本地Git仓库里边
 
-4.查看当前状态
+4.链接你的github：
+
+git config --global user.email "you@example.com
+git config --global user.name "Your Name"
+
+
+5.查看当前状态
 git status
 
-5.把项目添加到仓库
+6.把项目添加到仓库
 git add（git add .把该目录下的所有文件添加到仓库，注意点是用空格隔开的）
 
-6.把项目提交到仓库
+7.把项目提交到仓库
 git commit -m "提交注释"
 
-7.创建SSH KEY
+8.创建SSH KEY
 ssh-keygen -t rsa -C "youremail@example.com"
 
 ps:创建后你的C盘用户目录下会有.ssh目录，并且里边有id_rsa和id_rsa.pub两个文件
 
-8.登录Github,找到右上角的图标，打开点进里面的Settings，再选中里面的SSH and GPG KEYS，点击右上角的New SSH key，然后Title里面随便填，再把刚才id_rsa.pub里面的内容复制到Title下面的Key内容框里面，最后点击Add SSH key，这样就完成了SSH Key的加密。
+9.验证公钥
+ssh -T git@github.com
 
-9.在Github上创建一个Git仓库。
+（ps:如果验证通过，Github上的公钥将变绿）
 
-10.将本地仓库和Git仓库进行链接
-git remote add origin https://github.com/nangonglongmao/Python.git
 
+
+10.登录Github,找到右上角的图标，打开点进里面的Settings，再选中里面的SSH and GPG KEYS，点击右上角的New SSH key，然后Title里面随便填，再把刚才id_rsa.pub里面的内容复制到Title下面的Key内容框里面，最后点击Add SSH key，这样就完成了SSH Key的加密。
+
+
+11.在Github上创建一个Git仓库。
+
+12.将本地仓库和Git仓库进行链接
+git remote add origin https://github.com/nangonglongmao/Python.gi
 ps:origin后面加的是你Github上创建好的仓库的地址。
 
-11.把本地库的所有内容推送到远程仓库（也就是Github）
+
+13.把本地库的所有内容推送到远程仓库（也就是Github）
 git push -u origin master
 
 ps: 由于新建的远程仓库是空的，所以要加上-u这个参数，等远程仓库里面有了内容之后，下次再从本地库上传内容的时候只需下面这样就可以了：
