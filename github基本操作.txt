@@ -8,7 +8,7 @@ git init
 
 4.链接你的github：
 
-git config --global user.email "you@example.com
+git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
 
 
