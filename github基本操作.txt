@@ -39,7 +39,7 @@ ssh -T git@github.com
 11.在Github上创建一个Git仓库。
 
 12.将本地仓库和Git仓库进行链接
-git remote add origin https://github.com/nangonglongmao/Python.gi
+git remote add origin https://github.com/nangonglongmao/alluse.git
 ps:origin后面加的是你Github上创建好的仓库的地址。
 
 
