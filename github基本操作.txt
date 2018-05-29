@@ -72,7 +72,7 @@ ps:可以参考链接（https://blog.csdn.net/longintchar/article/details/511123
 
 4.git remote rm origin(如果没有这一步直接下一步会提示错误fatal: remote origin already exists.)
 
-5.git remote add origin https://github.com/nangonglongmao/Python.git (ssh或者HTTPS地址)
+5.git remote add origin https://github.com/nangonglongmao/alluse.git (ssh或者HTTPS地址)
 
 6.git push -u origin master
 
