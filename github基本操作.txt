@@ -68,7 +68,7 @@ ps:可以参考链接（https://blog.csdn.net/longintchar/article/details/511123
 
 2.git add .(git add 空格+点.)
 
-3.git commit - m "更新信息"
+3.git commit -m "更新信息"
 
 4.git remote rm origin(如果没有这一步直接下一步会提示错误fatal: remote origin already exists.)
 
