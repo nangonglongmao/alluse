@@ -1,0 +1,423 @@
+一、创建用用户：
+	1.添加用户：			
+		useradd -m suyin
+	2.设置用户密码：		
+		passwd suyin
+	3.将用户添加到用户组：
+		usermod -a -G adm suyin
+		usermod -a -G sudo suyin
+	4.为用户添加权限：	
+		vim /etc/sudoers
+		（在 root   ALL=(ALL:ALL) 下添加下边代码，不要注释这句代码！）
+		suyin   ALL=(ALL:ALL) ALL
+		：wq!
+	5.设置vim：
+		su - suyin			
+		vim .vimrc
+			syntax on
+			set nu
+			set autoindent
+			set smartindent
+			set tabstop=4
+			set shiftwidth=4
+			set showmatch
+			set ruler
+			set cindent
+			set background=dark
+		:wq!
+
+
+二、安装python3.6 
+	1.更新源：			sudo apt-get update
+	2.安装安全公共组件：	sudo apt-get install software-properties-common
+	3.添加python3.6环境：sudo add-apt-repository ppa:jonathonf/python-3.6
+	4.再次更新源：		sudo apt-get update
+	5.安装python3.6： 	sudo apt-get install python3.6
+
+	6.配置python3.6： 	cd /usr/bin/
+						sudo rm python
+						sudo ln -s python3.6 python
+
+	7.安装pip:			sudo apt-get install python3-pip
+	8.升级pip：			sudo python pip install --upgrade pip
+
+
+三、安装虚拟环境：
+	sudo pip install virtualenv
+	sudo pip install virtualenvwrapper
+	mkdir ~/.virtualenvs
+	vim ~/.bashrc(在末尾添加下边的两行代码)
+		export WORKON_HOME=$HOME/.virtualenvs
+		source /usr/local/bin/virtualenvwrapper.sh
+	:wq!
+	source ~/.bashrc
+
+
+四、安装MySQL：
+	注意：需要先设置阿里云服务器安全组，否则无法连接MySQL数据库！！！
+	1.安装：
+		 sudo apt-get install mysql-server（安装过程中需要设置账户和密码）
+	2.开启root用户的全称的访问权限：
+		mysql -uroot -p(回车，输入密码)
+		use mysql;
+		update user set host = '%' where user = 'root';
+		grant all privileges on *.* to 'root'@'%' identified by '密码';
+			(此密码是你想更新的密码，用原来的密码也可以)
+		flush privileges;
+		quit
+		sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
+		将bind-address = 127.0.0.1修改为bind-address = 0.0.0.0
+		:wq
+		sudo service mysql restart
+
+
+	五、安装MongoDB：
+		1.将MongoDB安装包上传至阿里云：
+			scp -r mongodb-linux-x86_64-ubuntu1604-3.4.0.tgz root@www.suyin.tech:/home/suyin
+			（下载：suyin@www.suyin.tech:/home/suyin/a.py .）
+			（第一次需要输入yes,不能直接回车，然后输入阿里云密码）
+		2.解压MongoDB：
+			tar -zxvf mongodb-linux-x86_64-ubuntu1604-3.4.0.tgz
+		3.移动解压后的文件：
+		sudo mv mongodb-linux-x86_64-ubuntu1604-3.4.0 /usr/local/mongodb
+		4.配置环境变量：
+			sudo vim /etc/profile（在最下边添加下边代码）
+				export PATH=/usr/local/mongodb/bin:$PATH
+		5.使环境变量生效：
+			source /etc/profile
+		6.添加配置文件：
+			sudo vim /etc/mongod.conf（添加以下代码）
+					#详细记录输出
+				verbose=true
+					#指定服务器端口，默认端口27017
+				port=27017
+					#指定MongoDB日志文件，注意是指定文件不是目录
+				logpath=/var/log/mongodb/logs/mongodb.log
+					#使用追加的方式写日志
+				logappend=true
+					#指定数据库路径
+				dbpath=/home/suyin/mongodb/db
+					#设置每个数库将保存在一个单独的目录
+				directoryperdb=true
+					#启用验证
+				auth=false
+					#以守护进程的方式运行MongoDB，创建服务器进程
+				fork=true
+					#安静退出
+				quiet=true
+				（shift+zz）
+		7.创建各种目录及文件：
+			sudo mkdir /var/log/mongodb/logs -p
+			sudo touch /var/log/mongodb/logs/mongodb.log
+			mkdir /home/suyin/mongodb/db -p
+		8.设置开机自启：
+			cd /etc/init.d
+			sudo vim mongodb（添加以下代码）
+#!/bin/sh
+
+### BEGIN INIT INF
+#Provides:     mongodb
+# Required-Start:
+# Required-Stop:
+# Default-Start:        2 3 4 5 
+# Default-Stop:         0 1 6 
+# Short-Description: mongodb
+# Description: mongo db server
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+PROGRAM=/usr/local/mongodb/bin/mongod
+MONGOPID=`ps -ef | grep 'mongod' | grep -v grep | awk '{print $2}'`
+
+test -x $PROGRAM || exit 0
+case "$1" in
+start)
+	ulimit -n 3000
+	log_begin_msg "Starting MongoDB server"
+	$PROGRAM -f /etc/mongod.conf
+	log_end_msg 0
+	;;
+stop)
+	log_begin_msg "Stopping MongoDB server"
+	if [ ! -z "$MONGOPID" ]; then
+		kill -15 $MONGOPID
+	fi
+	log_end_msg 0
+	;;
+status)
+	;;
+*)
+	log_success_msg "Usage: /etc/init.d/mongodb {start|stop|status}"
+	exit 1
+esac
+exit 0
+
+		9.添加可执行权限：
+			sudo chmod +x mongodb
+		10.注册成开机脚本：
+			cd ~
+			sudo update-rc.d mongodb defaults
+			（
+			移除开机脚本：
+				sudo update-rc.d mongodb remove
+			 ）
+		11.启动：
+		 	sudo service mongodb start
+		 	(
+		 	启动报错：
+		 		Faild to start mongod.service:Unit mongod.servicenot found
+		 	解决方案:
+		 		sudo chown root:root /tmp
+		 		sudo chmod 777 /tmp
+		 		sudo ls -ld /tmp
+		 	)
+	 	12.查看服务是否开启：
+	 		ps -aux | grep mongo
+	 		（
+	 		停止服务：
+	 		sudo service mongodb stop
+	 		）
+ 		13. 客户端连接：
+ 			mongo
+
+
+			
+
+
+六、Redis安装：
+	1、安装tcl：
+		sudo apt-get install tcl
+	2.解压安装包：
+		tar -zxvf redis-3.2.5.tar.gz
+	3.创建安装目录：
+		sudo mv redis-3.2.5 /usr/local/redis
+		cd /usr/local/redis/
+	4.源码编译安装
+		sudo make（编译）
+		sudo make test（测试）
+		sudo make install（安装）
+	5.测试：
+		/usr/local/redis/src/redis-server
+		(另启一个终端运行以下代码)
+			/usr/local/redis/src/redis-cli
+			ping
+			(出现PONG则成功)
+	6.创建相关目录：
+		sudo mkdir /etc/redis（配置文件路径）
+		sudo mkdir /var/lib/redis（数据库存储路径）
+	7.安装服务：
+		cd /usr/local/redis/utils/
+		sudo ./install_server.sh（一路next安装）
+	8.停止服务：
+		ps ajx | grep redis
+		sudo kill -9 对应进程号
+	9.重启测试：
+		redis-server
+		redis-cli
+	10.修改配置文件：
+		sudo vim /etc/redis/6379.conf
+			bind 0.0.0.0
+			requirepass 021808(修改密码)
+	11.重启服务：
+		sudo redis-server /etc/redis/6379.conf
+
+
+
+
+七、安装Git:
+	1.安装：
+		sudo apt-get install git
+	2.配置：
+		git config --global user.name 'Git用户名'
+		git config --global user.mail 'Git邮箱'
+	3.生成秘钥：
+		ssh-keygen -t rsa  -C 'Git邮箱'（一路next）
+	4.将公钥添加github：
+		cd .ssh
+		cat id_rsa.pub
+	5.验证公钥：
+		ssh -T git@github.com
+		（如果验证通过，Github上的公钥将变绿）
+
+
+
+八、重新配置MongoDB数据存储路径：
+	1.创建存储目录：
+		cd ~
+		cd /var/lib/
+		sudo mkdir mongodb/db -p
+	2.修改配置文件：
+		cd /var/lib/mongodb/db/
+		sudo vim /etc/mongod.conf(修改以下内容)
+			dbpath=/var/lib/mongodb/db
+	3.重启服务：
+		sudo service mongodb stop（停止服务）
+		ps -aux | grep mongo（查看服务是否停止）
+		sudo service mongodb start（重启服务）
+		ps -aux | grep mongo（查看服务是否启动）
+	4.删除原来数据存储目录：
+		cd ~
+		sudo rm -r mongodb
+
+
+
+
+九、项目上线部署：
+
+	1.安装zlib依赖库：
+		sudo apt-get install zlib1g-dev
+	2.解压相关文件：
+		tar -zxvf nginx-1.11.3.tar.gz
+		tar -zxvf openssl-1.0.1.tar.gz
+		tar -zxvf pcre-8.41.tar.gz
+	3.进入nginx解压目录：
+		cd nginx-1.11.3/
+	4.配置环境：
+		./configure --prefix=/usr/local/nginx  --with-http_ssl_module  --with-http_flv_module  --with-http_stub_status_module   --with-http_gzip_static_module --with-pcre=../pcre-8.41  --with-openssl=../openssl-1.0.1
+	5.编译并安装：
+		make && sudo make install
+		(
+		可以分布进行：
+		编译：make
+		安装：sudo make install
+		)
+	6.启动nginx服务：
+		sudo /usr/local/nginx/sbin/nginx
+		(停止nginx：sudo /usr/local/nginx/sbin/nginx -s stop） 
+	7.查看nginx服务是否启动：
+		ps -aux | grep nginx
+	8.验证nginx是否启动成功：在浏览器地址栏输入：
+		http://www.suyin.tech/（你的域名）
+	9.配置nginx:
+		cd /usr/local/nginx/conf/
+		sudo vim nginx.conf
+
+		取消对#pid        logs/nginx.pid;的注释，并在其下添加：
+		worker_rlimit_nofile 65535;（可以不用添加，系统默认65535，ulimit -a命令可以查看，ulimit -n 65535命令可以设置）
+
+		events {
+	    use epoll;(在此处添加此命令)
+	    worker_connections  1024;
+	 	}
+
+	 	开启#tcp_nopush     on;并在其下边添加：
+	 	tcp_nodelay     on;
+
+
+	 	
+	 	server {
+	        listen       80;
+	     	server_name  localhost www.suyin.tech www.yanclaire.xin;
+	         （在此处添加此命令,你的域名）
+	         
+	     	charset utf-8;(修改编码)
+
+	         修改location / {
+			root   html;
+			index  index.html index.htm;
+	          }如下：
+	          location / {
+			proxy_pass http://www.suyin.tech:8000;
+			proxy_set_header X-real-ip $remote_addr;
+			proxy_set_header Host $http_host;
+	         
+	        }
+
+
+	        开启#gzip  on;并在下方添加如下代码：
+	        gzip  on;
+
+	    upstream suyin {
+		server 39.105.117.158:8000 weight=1 max_fails=1 fail_timeout=300s;
+		#server 39.105.125.240:8000 weight=1 max_fails=1 fail_timeout=300s;
+	}
+
+	    	修改如下代码：
+	    location / {
+	        #proxy_pass http://www.suyin.tech:8000;
+	        #proxy_set_header X-real-ip $remote_addr;
+	        #proxy_set_header Host $http_host;
+	        include uwsgi_params;
+	        uwsgi_pass suyin;
+	          
+	         }
+
+	   	配置静态文件:
+	   		在error_page   500 502 503 504  /50x.html;
+	         location = /50x.html {
+	             root   html;
+	         }下边添加如下代码：
+	         location /static {
+	             alias /var/www/axf/static/;
+	         }
+
+	    重启nginx:
+	    	sudo /usr/local/nginx/sbin/nginx -s reload
+    	查看是否重启：
+    		ps -aux | grep nginx
+
+
+	10.部署Django项目：
+		修改setting设置：
+		DEBUG = False
+
+		ALLOWED_HOSTS = ["*",]
+
+		安装：
+			sudo apt-get install libpython3.6-dev
+
+		在工程目录下创建名为uwsgi.ini的文件,并在文件中添加以下代码：
+			[uwsgi]
+			socket=0.0.0.0:8000(socket为线上使用，http为直接作为web服务使用)
+			#http=0.0.0.0:8000
+			chdir=/home/suyin/work/project
+			wsgi-file=project/wsgi.py
+			processes=4
+			threads=2
+			master=True
+			pidfile=uwsgi.pid
+			deamonize=uwsgi.log
+
+		安装：
+			sudo pip install uwsgi
+
+		启动：
+			uwsgi --ini uwsgi.ini
+			（停止：uwsgi --stop uwsgi.pid）
+
+		查看是否启动：
+			ps -aux | grep uwsgi
+
+		配置静态文件：
+			在setting中修改如下：
+			STATIC_ROOT = '/var/www/axf/static'
+			STATIC_URL = '/static/'
+			STATICFILES_DIRS=[
+			    os.path.join(BASE_DIR, "static")
+			]
+
+		创建静态文件目录：	
+			cd work/project/
+			ls
+			cd /var
+			sudo mkdir www/axf/static -p
+		更改权限：
+			sudo chmod 777 /var/www/axf/static/
+
+			
+		迁移静态文件
+			cd ~
+			cd work/project/
+			python manage.py collectstatic
+
+
+
+
+
+
+
+
+
+
+
