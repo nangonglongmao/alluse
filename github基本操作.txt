@@ -33,7 +33,9 @@ ssh -T git@github.com
 
 
 
-10.登录Github,找到右上角的图标，打开点进里面的Settings，再选中里面的SSH and GPG KEYS，点击右上角的New SSH key，然后Title里面随便填，再把刚才id_rsa.pub里面的内容复制到Title下面的Key内容框里面，最后点击Add SSH key，这样就完成了SSH Key的加密。
+10.登录Github,找到右上角的图标，打开点进里面的Settings，再选中里面的SSH and GPG KEYS
+点击右上角的New SSH key，然后Title里面随便填，再把刚才id_rsa.pub里面的内容复制到Title下面的Key内容框里面
+最后点击Add SSH key，这样就完成了SSH Key的加密。
 
 
 11.在Github上创建一个Git仓库。
